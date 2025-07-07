@@ -225,12 +225,6 @@ selected_project = st.selectbox("Выберите проект для анали
 project_subset = project_data[project_data["Проект"] == selected_project]
 voc_subset = voc_data[voc_data["Проект"] == selected_project]
 accuracy_subset = accuracy_data[accuracy_data["Проект"] == selected_project]
-with st.expander("➕ Добавить замер VOC / Достоверности"):
-    new_date = st.date_input("Дата замера", datetime.date.today())
-    new_voc = st.number_input("VOC, %", min_value=0, max_value=100, step=1)
-    new_accuracy = st.number_input("Достоверность, %", min_value=0, max_value=100, step=1)
-    if st.button("💾 Добавить замеры"):
-        st.warning("🔒 Пока данные не сохраняются. Добавим сохранение позже через базу или session_state.")
 # -- Основные графики --
 st.subheader(f"📊 Ключевые метрики: {selected_project}")
 
