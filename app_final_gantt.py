@@ -191,10 +191,12 @@ st.altair_chart(gantt_chart, use_container_width=True)
 st.markdown("### Финансово-операционная панель управления AI-проектами (2025–2028)")
 
 # -------------------------------
+# -------------------------------
 # Проектный дашборд (индивидуальные метрики)
 # -------------------------------
 st.header("📈 Индивидуальные дашборды проектов")
 
+# -- Основные метрики по кварталам --
 project_data = pd.DataFrame({
     "Проект": ["Запуск чат-бота"] * 4 + ["Модель оценки риска"] * 4 + ["Интеграция CI/CD"] * 4 + ["LLM в КЦ"] * 4 + ["Облачная миграция"] * 4,
     "Квартал": ["Q1", "Q2", "Q3", "Q4"] * 5,
@@ -203,10 +205,33 @@ project_data = pd.DataFrame({
     "Отклонение от срока, дней": [0, 1, -2, -3, 5, 3, 0, -1, 2, 0, -2, -4, 1, 0, -1, -2, 7, 5, 1, 0]
 })
 
+# -- Новые метрики (по дате) --
+voc_data = pd.DataFrame({
+    "Проект": ["Запуск чат-бота"] * 3,
+    "Дата": pd.to_datetime(["2025-01-31", "2025-02-29", "2025-03-31"]),
+    "VOC, %": [72, 75, 78]
+})
+
+accuracy_data = pd.DataFrame({
+    "Проект": ["Запуск чат-бота"] * 6,
+    "Дата": pd.to_datetime(["2025-03-01", "2025-03-08", "2025-03-15", "2025-03-22", "2025-03-29", "2025-04-05"]),
+    "Достоверность, %": [87, 88, 90, 91, 92, 91]
+})
+
+# -- Выбор проекта --
 selected_project = st.selectbox("Выберите проект для анализа:", project_data["Проект"].unique())
 
+# -- Фильтрация по выбранному проекту --
 project_subset = project_data[project_data["Проект"] == selected_project]
-
+voc_subset = voc_data[voc_data["Проект"] == selected_project]
+accuracy_subset = accuracy_data[accuracy_data["Проект"] == selected_project]
+with st.expander("➕ Добавить замер VOC / Достоверности"):
+    new_date = st.date_input("Дата замера", datetime.date.today())
+    new_voc = st.number_input("VOC, %", min_value=0, max_value=100, step=1)
+    new_accuracy = st.number_input("Достоверность, %", min_value=0, max_value=100, step=1)
+    if st.button("💾 Добавить замеры"):
+        st.warning("🔒 Пока данные не сохраняются. Добавим сохранение позже через базу или session_state.")
+# -- Основные графики --
 st.subheader(f"📊 Ключевые метрики: {selected_project}")
 
 chart_progress = alt.Chart(project_subset).mark_line(point=True, color="#007BFF").encode(
@@ -231,6 +256,25 @@ st.altair_chart(chart_progress, use_container_width=True)
 st.altair_chart(chart_csat, use_container_width=True)
 st.altair_chart(chart_delay, use_container_width=True)
 
+# -- VOC график --
+if not voc_subset.empty:
+    voc_chart = alt.Chart(voc_subset).mark_line(point=True, color="#6A5ACD").encode(
+        x=alt.X("Дата:T", title="Месяц"),
+        y=alt.Y("VOC, %:Q"),
+        tooltip=["Дата", "VOC, %"]
+    ).properties(height=250, title="Оценка голоса клиента (VOC)")
+    st.altair_chart(voc_chart, use_container_width=True)
+
+# -- Accuracy график --
+if not accuracy_subset.empty:
+    acc_chart = alt.Chart(accuracy_subset).mark_line(point=True, color="#DC143C").encode(
+        x=alt.X("Дата:T", title="Дата замера"),
+        y=alt.Y("Достоверность, %:Q"),
+        tooltip=["Дата", "Достоверность, %"]
+    ).properties(height=250, title="Точность ответов (достоверность)")
+    st.altair_chart(acc_chart, use_container_width=True)
+
+# -- Таймлайн проекта --
 st.subheader("📅 Таймлайн проекта")
 project_timeline = pd.DataFrame({
     "Проект": ["Запуск чат-бота", "Модель оценки риска", "Интеграция CI/CD", "LLM в КЦ", "Облачная миграция"],
