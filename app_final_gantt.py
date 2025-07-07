@@ -254,18 +254,22 @@ st.altair_chart(chart_delay, use_container_width=True)
 if not voc_subset.empty:
     voc_chart = alt.Chart(voc_subset).mark_line(point=True, color="#6A5ACD").encode(
         x=alt.X("Дата:T", title="Месяц"),
-        y=alt.Y("VOC, %:Q"),
+        y=alt.Y("VOC, %:Q", title="VOC (%)", scale=alt.Scale(domain=[85, 100])),  # Установка границ по y
         tooltip=["Дата", "VOC, %"]
-    ).properties(height=250, title="Оценка голоса клиента (VOC)")
+    ).properties(height=250, title="📣 Оценка голоса клиента (VOC)") \
+     .configure_axis(labelFontSize=12, titleFontSize=14)
+    
     st.altair_chart(voc_chart, use_container_width=True)
 
 # -- Accuracy график --
 if not accuracy_subset.empty:
     acc_chart = alt.Chart(accuracy_subset).mark_line(point=True, color="#DC143C").encode(
         x=alt.X("Дата:T", title="Дата замера"),
-        y=alt.Y("Достоверность, %:Q"),
+        y=alt.Y("Достоверность, %:Q", title="Достоверность (%)", scale=alt.Scale(domain=[85, 100])),
         tooltip=["Дата", "Достоверность, %"]
-    ).properties(height=250, title="Точность ответов (достоверность)")
+    ).properties(height=250, title="✅ Точность ответов (достоверность)") \
+     .configure_axis(labelFontSize=12, titleFontSize=14)
+    
     st.altair_chart(acc_chart, use_container_width=True)
 
 # -- Таймлайн проекта --
