@@ -254,7 +254,7 @@ st.altair_chart(chart_delay, use_container_width=True)
 if not voc_subset.empty:
     voc_chart = alt.Chart(voc_subset).mark_line(point=True, color="#6A5ACD").encode(
         x=alt.X("Дата:T", title="Месяц"),
-        y=alt.Y("VOC, %:Q", title="VOC (%)", scale=alt.Scale(domain=[85, 100])),  # Установка границ по y
+        y=alt.Y("VOC, %:Q", title="VOC (%)", scale=alt.Scale(domain=[70, 100])),  # Установка границ по y
         tooltip=["Дата", "VOC, %"]
     ).properties(height=250, title="📣 Оценка голоса клиента (VOC)") \
      .configure_axis(labelFontSize=12, titleFontSize=14)
